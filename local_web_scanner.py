@@ -1633,13 +1633,13 @@ class LocalWebScannerApp:
 
         # Header line: Multithreaded Network Scanner title on the left, plain text IG link on the right
         header_bar = ttk.Frame(main_frame)
-        header_bar.pack(fill=tk.X, pady=(0, 4))
+        header_bar.pack(fill=tk.X, pady=(8, 6))
 
         ttk.Label(
             header_bar,
             text="⚡ Multithreaded Network Scanner",
             font=("Segoe UI", 10, "bold")
-        ).pack(side=tk.LEFT, padx=(2, 0), pady=1)
+        ).pack(side=tk.LEFT, padx=(2, 0), pady=2)
 
         # Plain text Instagram link in top-right (no box/outline)
         lbl_ig_plain = ttk.Label(
@@ -1648,7 +1648,7 @@ class LocalWebScannerApp:
             font=("Segoe UI", 9),
             cursor="hand2"
         )
-        lbl_ig_plain.pack(side=tk.RIGHT, padx=(0, 2), pady=1)
+        lbl_ig_plain.pack(side=tk.RIGHT, padx=(0, 2), pady=2)
         lbl_ig_plain.bind("<Button-1>", lambda e: webbrowser.open("https://www.instagram.com/piotr72181/", new=2))
 
         # 1. Multithreaded Scan Configuration Section
