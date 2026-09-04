@@ -58,6 +58,6 @@ pyinstaller LocalWebScanner.spec
 
 **Personal Use Only License**
 
-Copyright (c) 2026 urb3x. All rights reserved.
+Copyright (c) 2026 Pepper. All rights reserved.
 
 This software is provided strictly for **personal, non-commercial, educational, and authorized private lab testing use only**. Any commercial exploitation, resale, sublicensing, or unauthorized distribution is prohibited. See the [LICENSE](LICENSE) file for complete details.
