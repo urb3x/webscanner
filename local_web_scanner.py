@@ -1631,20 +1631,19 @@ class LocalWebScannerApp:
         main_frame = ttk.Frame(self.root, padding="10 10 10 10")
         main_frame.pack(fill=tk.BOTH, expand=True)
 
-        # Top Header Bar (matches window background) with plain text Instagram Link in Top-Right
-        top_header_bar = ttk.Frame(main_frame)
-        top_header_bar.pack(fill=tk.X, pady=(0, 4))
+        # Header line: Multithreaded Network Scanner title on the left, plain text IG link on the right
+        header_bar = ttk.Frame(main_frame)
+        header_bar.pack(fill=tk.X, pady=(0, 4))
 
-        app_title_lbl = ttk.Label(
-            top_header_bar,
-            text="🔍 Local IP Website Scanner & Benchmarking Utility",
-            font=("Segoe UI", 9, "bold")
-        )
-        app_title_lbl.pack(side=tk.LEFT, padx=(2, 0), pady=1)
+        ttk.Label(
+            header_bar,
+            text="⚡ Multithreaded Network Scanner",
+            font=("Segoe UI", 10, "bold")
+        ).pack(side=tk.LEFT, padx=(2, 0), pady=1)
 
         # Plain text Instagram link in top-right (no box/outline)
         lbl_ig_plain = ttk.Label(
-            top_header_bar,
+            header_bar,
             text="📸 @piotr72181",
             font=("Segoe UI", 9),
             cursor="hand2"
@@ -1653,7 +1652,7 @@ class LocalWebScannerApp:
         lbl_ig_plain.bind("<Button-1>", lambda e: webbrowser.open("https://www.instagram.com/piotr72181/", new=2))
 
         # 1. Multithreaded Scan Configuration Section
-        config_group = ttk.LabelFrame(main_frame, text=" ⚡ Multithreaded Network Scanner ", padding="10 8 10 8")
+        config_group = ttk.LabelFrame(main_frame, padding="10 8 10 8")
         config_group.pack(fill=tk.X, pady=(0, 6))
 
         # Row 0: Subnet / IP Range
