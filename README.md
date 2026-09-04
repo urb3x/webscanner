@@ -1,6 +1,6 @@
 ﻿# 🔍 Local IP Website Scanner & Test Site Utility
 
-A multithreaded network scanning utility and diagnostics tool built with Python & Tkinter. It scans local network IP ranges and subnets for active HTTP and HTTPS web services, provides one-click browser launching, includes an embedded low-resource **Test Site** with dynamic RAM allocation and live attack detection, and features a built-in **DoS Stress Testing / Benchmarking Engine**.
+A multithreaded network scanning utility and diagnostics tool built with Python & Tkinter. It scans local network IP ranges and subnets for active HTTP and HTTPS web services across ALL ports (1-65535), provides one-click browser launching, includes an embedded low-resource **Test Site** with dynamic RAM allocation and live attack detection, and features a built-in **DoS Stress Testing / Benchmarking Engine**.
 
 ---
 
@@ -16,7 +16,7 @@ A multithreaded network scanning utility and diagnostics tool built with Python 
 
 - 🌐 **Fast Multithreaded Subnet Scanner**:
   - Auto-detects local subnet (e.g., `192.168.1.0/24`) and IP ranges.
-  - Scans standard web ports (`80`, `443`, `8080`, `8443`, `3000`, `5000`, `8000`, etc.).
+  - Scans **ALL web ports (1 to 65535)** or custom ranges/comma-separated lists.
   - Extracts HTTP/HTTPS web page titles, status codes, and server banners.
   - Highlights local test servers in green for fast identification.
 
