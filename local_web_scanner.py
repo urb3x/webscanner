@@ -1589,6 +1589,7 @@ class LocalWebScannerApp:
         # Scanner state variables
         self.is_scanning = False
         self.stop_requested = False
+        self.scan_stop_event = threading.Event()
         self.mock_server = None
         self.results = []
         self.total_targets = 0
@@ -2152,6 +2153,7 @@ class LocalWebScannerApp:
 
         self.is_scanning = True
         self.stop_requested = False
+        self.scan_stop_event.clear()
         self.btn_scan.config(state=tk.DISABLED)
         self.btn_stop.config(state=tk.NORMAL)
         self.progress['maximum'] = self.total_targets
@@ -2171,7 +2173,8 @@ class LocalWebScannerApp:
     def stop_scan(self):
         if self.is_scanning:
             self.stop_requested = True
-            self.status_label.config(text="Stopping scan... Please wait.")
+            self.scan_stop_event.set()
+            self.status_label.config(text="Stopping scan immediately...")
             self.btn_stop.config(state=tk.DISABLED)
 
     def _tick_progress(self):
@@ -2184,35 +2187,40 @@ class LocalWebScannerApp:
         rate = completed / elapsed if elapsed > 0 else 0
         pct = int((completed / self.total_targets) * 100) if self.total_targets > 0 else 0
 
-        self.status_label.config(
-            text=f"Progress: {completed}/{self.total_targets} ({pct}%) | {rate:.1f} checks/sec | Elapsed: {int(elapsed)}s"
-        )
+        if self.scan_stop_event.is_set():
+            self.status_label.config(text=f"Scan stopping... {completed}/{self.total_targets} ({pct}%)")
+        else:
+            self.status_label.config(
+                text=f"Progress: {completed}/{self.total_targets} ({pct}%) | {rate:.1f} checks/sec | Elapsed: {int(elapsed)}s"
+            )
 
         if self.is_scanning:
             self.root.after(100, self._tick_progress)
 
     def _scan_worker(self, targets, max_workers, timeout):
-        work_queue = queue.Queue(maxsize=10000)
+        work_queue = queue.Queue(maxsize=4000)
         lock = threading.Lock()
+        producer_finished = [False]
 
         def worker():
-            while not self.stop_requested:
+            while not self.scan_stop_event.is_set():
                 try:
-                    item = work_queue.get(timeout=0.2)
+                    item = work_queue.get(timeout=0.05)
                 except queue.Empty:
-                    if producer_finished[0]:
+                    if producer_finished[0] or self.scan_stop_event.is_set():
                         break
                     continue
 
-                if item is None:
+                if item is None or self.scan_stop_event.is_set():
                     work_queue.task_done()
                     break
 
                 ip, port = item
                 try:
-                    res = probe_web_service(ip, port, timeout=timeout)
-                    if res and not self.stop_requested:
-                        self.root.after(0, self._add_result, res)
+                    if not self.scan_stop_event.is_set():
+                        res = probe_web_service(ip, port, timeout=timeout)
+                        if res and not self.scan_stop_event.is_set():
+                            self.root.after(0, self._add_result, res)
                 except Exception:
                     pass
                 finally:
@@ -2220,21 +2228,43 @@ class LocalWebScannerApp:
                         self.completed_targets += 1
                     work_queue.task_done()
 
-        producer_finished = [False]
-        threads = []
         actual_workers = min(max_workers, len(targets)) if len(targets) > 0 else 1
+        threads = []
         for _ in range(actual_workers):
             t = threading.Thread(target=worker, daemon=True)
             t.start()
             threads.append(t)
 
         for target in targets:
-            if self.stop_requested:
+            if self.scan_stop_event.is_set():
                 break
-            work_queue.put(target)
+            while not self.scan_stop_event.is_set():
+                try:
+                    work_queue.put(target, timeout=0.05)
+                    break
+                except queue.Full:
+                    pass
 
         producer_finished[0] = True
-        work_queue.join()
+
+        if self.scan_stop_event.is_set():
+            while not work_queue.empty():
+                try:
+                    work_queue.get_nowait()
+                    work_queue.task_done()
+                except Exception:
+                    pass
+
+        while not self.scan_stop_event.is_set() and work_queue.unfinished_tasks > 0:
+            time.sleep(0.05)
+
+        if self.scan_stop_event.is_set():
+            while not work_queue.empty():
+                try:
+                    work_queue.get_nowait()
+                    work_queue.task_done()
+                except Exception:
+                    pass
 
         for _ in threads:
             try:
@@ -2243,7 +2273,7 @@ class LocalWebScannerApp:
                 pass
 
         for t in threads:
-            t.join(timeout=0.5)
+            t.join(timeout=0.2)
 
         self.root.after(0, self._scan_finished)
 
