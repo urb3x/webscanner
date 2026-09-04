@@ -1,0 +1,19 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*.class
+
+# PyInstaller builds
+build/
+*.spec.bak
+
+# Local runtime & test artifacts
+*.log
+stress_test_*.csv
+.local_web_scanner_disclaimer.json
+
+# IDE / Editor configs
+.vscode/
+.idea/
+.gemini/
+.system_generated/
