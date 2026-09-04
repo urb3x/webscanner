@@ -17,3 +17,4 @@ stress_test_*.csv
 .idea/
 .gemini/
 .system_generated/
+dist/
