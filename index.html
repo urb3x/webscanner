@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -42,10 +42,33 @@
         .top-nav {
             display: flex;
             justify-content: flex-end;
+            align-items: center;
             padding: 16px 24px 0;
             max-width: 900px;
             margin: 0 auto;
             width: 100%;
+            gap: 12px;
+        }
+
+        .btn-ig-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+            color: #ffffff !important;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-decoration: none;
+            margin-right: auto;
+            box-shadow: 0 2px 10px rgba(225, 48, 108, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .btn-ig-top:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(225, 48, 108, 0.5);
         }
 
         .lang-switch {
@@ -314,8 +337,11 @@
 </head>
 <body>
 
-    <!-- Top Navigation with Language Switcher -->
+    <!-- Top Navigation with Language Switcher & Instagram -->
     <div class="top-nav">
+        <a href="https://www.instagram.com/piotr72181/" target="_blank" class="btn-ig-top">
+            📸 @piotr72181
+        </a>
         <div class="lang-switch">
             <button id="btn-en" class="lang-btn active" onclick="setLanguage('en')">
                 🇬🇧 EN
@@ -414,7 +440,7 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2026 Pepper. <span data-i18n="footer_repo">Repository:</span> <a href="https://github.com/urb3x/webscanner" target="_blank">github.com/urb3x/webscanner</a> • <span data-i18n="footer_license">Personal Use Only License.</span></p>
+            <p>&copy; 2026 Pepper. <span data-i18n="footer_author">Author:</span> <a href="https://www.instagram.com/piotr72181/" target="_blank">@piotr72181 (Instagram)</a> • <span data-i18n="footer_repo">Repository:</span> <a href="https://github.com/urb3x/webscanner" target="_blank">github.com/urb3x/webscanner</a> • <span data-i18n="footer_license">Personal Use Only License.</span></p>
         </div>
     </footer>
 
@@ -441,6 +467,7 @@
                 cli_desc: "You can also clone the entire repository directly using Git:",
                 copy: "Copy",
                 copied_alert: "Copied to clipboard!",
+                footer_author: "Author:",
                 footer_repo: "Repository:",
                 footer_license: "Personal Use Only License."
             },
@@ -465,6 +492,7 @@
                 cli_desc: "Możesz również sklonować całe repozytorium bezpośrednio przez Git:",
                 copy: "Kopiuj",
                 copied_alert: "Skopiowano do schowka!",
+                footer_author: "Autor:",
                 footer_repo: "Repozytorium:",
                 footer_license: "Licencja do użytku osobistego."
             }

@@ -343,6 +343,8 @@ def check_or_show_disclaimer(parent_root):
         "You assume 100% full personal and legal responsibility for all network traffic, scans, and stress tests generated. "
         "You certify that your use complies strictly with all applicable local, national, and international laws (including computer fraud, "
         "cybercrime, and denial-of-service regulations).\n\n"
+        "4. AUTHOR & CONTACT:\n"
+        "Author: Pepper / @piotr72181 (Instagram: https://www.instagram.com/piotr72181/)\n\n"
         "By clicking 'I Agree & Continue', you accept full legal responsibility and release the creator from all liability."
     )
     txt.insert(tk.END, disclaimer_text)
@@ -1806,6 +1808,13 @@ class LocalWebScannerApp:
             command=self.toggle_test_server
         )
         self.btn_bottom_host.pack(side=tk.LEFT, padx=(6, 0))
+
+        self.btn_ig = ttk.Button(
+            bottom_frame,
+            text="📸 @piotr72181",
+            command=lambda: webbrowser.open("https://www.instagram.com/piotr72181/", new=2)
+        )
+        self.btn_ig.pack(side=tk.LEFT, padx=(6, 0))
 
         ttk.Label(bottom_frame, text=" Tip: Host test site, or select row & click Stress Test.", font=("Segoe UI", 8, "italic")).pack(side=tk.LEFT, padx=10)
 
