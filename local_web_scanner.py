@@ -30,11 +30,9 @@ except ImportError:
     pass
 
 
-# Default ports (ALL ports 1 to 65535)
-DEFAULT_PORTS = "1-65535"
-
-# Most common web and service ports
-COMMON_PORTS = "80, 443, 8080, 8443, 3000, 5000, 8000, 8888, 9000, 8081, 8008, 9443, 7001, 5001, 8088, 8880, 2082, 2083, 2086, 2087, 8181, 8001, 8082, 9090, 10000"
+# Default ports: Common web and service ports
+DEFAULT_PORTS = "80, 443, 8080, 8443, 3000, 5000, 8000, 8888, 9000, 8081, 8008, 9443, 7001, 5001, 8088, 8880, 2082, 2083, 2086, 2087, 8181, 8001, 8082, 9090, 10000"
+COMMON_PORTS = DEFAULT_PORTS
 
 # Common ports that default to HTTPS
 HTTPS_PORTS = {443, 8443, 9443}
@@ -42,15 +40,25 @@ HTTPS_PORTS = {443, 8443, 9443}
 
 def get_local_ip():
     """Detect the machine's primary local network IP address."""
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    for target in [('8.8.8.8', 80), ('1.1.1.1', 80), ('192.168.1.1', 80), ('10.0.0.1', 80)]:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            s.connect(target)
+            ip = s.getsockname()[0]
+            if ip and not ip.startswith("127."):
+                return ip
+        except Exception:
+            pass
+        finally:
+            s.close()
     try:
-        s.connect(('8.8.8.8', 80))
-        ip = s.getsockname()[0]
+        hostname = socket.gethostname()
+        for ip in socket.gethostbyname_ex(hostname)[2]:
+            if not ip.startswith("127.") and not ip.startswith("169.254."):
+                return ip
     except Exception:
-        ip = '127.0.0.1'
-    finally:
-        s.close()
-    return ip
+        pass
+    return '127.0.0.1'
 
 
 def get_default_subnet():
@@ -1620,9 +1628,9 @@ class LocalWebScannerApp:
         main_frame = ttk.Frame(self.root, padding="10 10 10 10")
         main_frame.pack(fill=tk.BOTH, expand=True)
 
-        # 1. Config Section
-        config_group = ttk.LabelFrame(main_frame, text=" Scan Configuration ", padding="10 8 10 8")
-        config_group.pack(fill=tk.X, pady=(0, 10))
+        # 1. Multithreaded Scan Configuration Section
+        config_group = ttk.LabelFrame(main_frame, text=" ⚡ Multithreaded Network Scanner ", padding="10 8 10 8")
+        config_group.pack(fill=tk.X, pady=(0, 6))
 
         # Row 0: Subnet / IP Range
         row0 = ttk.Frame(config_group)
@@ -1631,9 +1639,11 @@ class LocalWebScannerApp:
         ttk.Label(row0, text="IP Range / Subnet:", width=18).pack(side=tk.LEFT)
         self.ip_entry = ttk.Entry(row0, font=("Consolas", 10))
         self.ip_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 6))
-        
-        btn_autodetect = ttk.Button(row0, text="Auto-Detect Subnet", command=self._auto_detect_subnet)
-        btn_autodetect.pack(side=tk.LEFT)
+
+        btn_autodetect = ttk.Button(row0, text="🔍 Auto-Detect Subnet", command=self._auto_detect_subnet)
+        btn_autodetect.pack(side=tk.LEFT, padx=(0, 4))
+        btn_myip = ttk.Button(row0, text="📍 My IP", command=lambda: self._set_ip(get_local_ip()))
+        btn_myip.pack(side=tk.LEFT)
 
         # Row 1: Ports
         row1 = ttk.Frame(config_group)
@@ -1644,7 +1654,7 @@ class LocalWebScannerApp:
         self.port_entry.insert(0, DEFAULT_PORTS)
         self.port_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 6))
 
-        btn_common_ports = ttk.Button(row1, text="⭐ Common Ports", command=lambda: self._set_ports(COMMON_PORTS))
+        btn_common_ports = ttk.Button(row1, text="⭐ Common Ports (Default)", command=lambda: self._set_ports(COMMON_PORTS))
         btn_common_ports.pack(side=tk.LEFT, padx=(0, 4))
 
         btn_all_web = ttk.Button(row1, text="🌐 ALL Ports (1-65535)", command=lambda: self._set_ports("1-65535"))
@@ -1664,26 +1674,42 @@ class LocalWebScannerApp:
         self.timeout_spin.set(0.5)
         self.timeout_spin.pack(side=tk.LEFT, padx=(4, 15))
 
-        ttk.Label(row2, text="Host RAM:").pack(side=tk.LEFT)
-        self.host_ram_var = tk.StringVar(value="32")
-        self.host_ram_spin = ttk.Spinbox(row2, from_=4, to=4096, increment=16, textvariable=self.host_ram_var, width=6, command=self._on_host_ram_spin_change)
-        self.host_ram_spin.pack(side=tk.LEFT, padx=(4, 2))
-        self.host_ram_spin.bind("<KeyRelease>", self._on_host_ram_spin_change)
-        self.host_ram_var.trace_add("write", lambda *a: self._on_host_ram_spin_change())
-        ttk.Label(row2, text="MB").pack(side=tk.LEFT, padx=(0, 10))
-
-        # Scan and Stop buttons
-        self.btn_scan = ttk.Button(row2, text="▶ Start Scan", style="Primary.TButton", command=self.start_scan)
+        self.btn_scan = ttk.Button(row2, text="▶ Start Multithreaded Scan", style="Primary.TButton", command=self.start_scan)
         self.btn_scan.pack(side=tk.RIGHT, padx=(4, 0))
 
         self.btn_stop = ttk.Button(row2, text="⏹ Stop", state=tk.DISABLED, command=self.stop_scan)
         self.btn_stop.pack(side=tk.RIGHT, padx=(4, 0))
 
-        self.btn_top_stress = ttk.Button(row2, text="⚡ Stress Test Port", command=self.open_stress_test)
+        self.btn_top_stress = ttk.Button(row2, text="⚡ DoS Stress Test Target", command=self.open_stress_test)
         self.btn_top_stress.pack(side=tk.RIGHT, padx=(4, 6))
 
-        self.btn_top_host = ttk.Button(row2, text="🌐 Host Test Site (8080)", command=self.toggle_test_server)
-        self.btn_top_host.pack(side=tk.RIGHT, padx=(4, 6))
+        # 2. Separated Test Website Hosting Section
+        hosting_group = ttk.LabelFrame(main_frame, text=" 🌐 Embedded Test Website Hosting (Port 8080) ", padding="10 6 10 6")
+        hosting_group.pack(fill=tk.X, pady=(0, 6))
+
+        host_row = ttk.Frame(hosting_group)
+        host_row.pack(fill=tk.X)
+
+        self.host_status_label = ttk.Label(host_row, text="Status: 🔴 Stopped", font=("Segoe UI", 9, "bold"))
+        self.host_status_label.pack(side=tk.LEFT, padx=(0, 15))
+
+        self.btn_top_host = ttk.Button(host_row, text="🌐 Start Test Site (8080)", command=self.toggle_test_server)
+        self.btn_top_host.pack(side=tk.LEFT, padx=(0, 6))
+
+        self.btn_open_host = ttk.Button(host_row, text="↗ Open in Browser", command=self._open_test_site_browser, state=tk.DISABLED)
+        self.btn_open_host.pack(side=tk.LEFT, padx=(0, 20))
+
+        ttk.Label(host_row, text="Simulated RAM:").pack(side=tk.LEFT)
+        self.host_ram_var = tk.StringVar(value="32")
+        self.host_ram_spin = ttk.Spinbox(host_row, from_=4, to=4096, increment=16, textvariable=self.host_ram_var, width=6, command=self._on_host_ram_spin_change)
+        self.host_ram_spin.pack(side=tk.LEFT, padx=(4, 2))
+        self.host_ram_spin.bind("<KeyRelease>", self._on_host_ram_spin_change)
+        self.host_ram_var.trace_add("write", lambda *a: self._on_host_ram_spin_change())
+        ttk.Label(host_row, text="MB").pack(side=tk.LEFT, padx=(0, 8))
+
+        for ram_preset in [16, 32, 64, 128]:
+            btn_ram = ttk.Button(host_row, text=f"{ram_preset}M", width=5, command=lambda r=ram_preset: self.host_ram_var.set(str(r)))
+            btn_ram.pack(side=tk.LEFT, padx=2)
 
         # 2. Progress and Filter Bar
         status_bar_frame = ttk.Frame(main_frame)
@@ -1943,6 +1969,17 @@ class LocalWebScannerApp:
         }
         StressTestDialog(self.root, target_info)
 
+    def _set_ip(self, ip_str):
+        self.ip_entry.delete(0, tk.END)
+        self.ip_entry.insert(0, ip_str)
+        self.status_label.config(text=f"Target IP set to: {ip_str}")
+
+    def _open_test_site_browser(self):
+        try:
+            webbrowser.open("http://127.0.0.1:8080/", new=2)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to open browser: {e}")
+
     def _on_host_ram_spin_change(self, event=None):
         try:
             val_str = self.host_ram_var.get().strip() if hasattr(self, 'host_ram_var') else self.host_ram_spin.get().strip()
@@ -1959,8 +1996,12 @@ class LocalWebScannerApp:
         if self.mock_server and self.mock_server.is_running:
             self.mock_server.stop()
             self.mock_server = None
-            self.btn_top_host.config(text="🌐 Host Test Site (8080)")
-            self.btn_bottom_host.config(text="🌐 Host Test Site (8080)")
+            self.btn_top_host.config(text="🌐 Start Test Site (8080)")
+            self.btn_bottom_host.config(text="🌐 Start Test Site (8080)")
+            if hasattr(self, 'host_status_label'):
+                self.host_status_label.config(text="Status: 🔴 Stopped", foreground="#ef4444")
+            if hasattr(self, 'btn_open_host'):
+                self.btn_open_host.config(state=tk.DISABLED)
             self.status_label.config(text="Test Site server stopped.")
         else:
             try:
@@ -1974,6 +2015,10 @@ class LocalWebScannerApp:
                 self.mock_server = server
                 self.btn_top_host.config(text="🛑 Stop Test Site (8080)")
                 self.btn_bottom_host.config(text="🛑 Stop Test Site (8080)")
+                if hasattr(self, 'host_status_label'):
+                    self.host_status_label.config(text="Status: 🟢 Running (8080)", foreground="#10b981")
+                if hasattr(self, 'btn_open_host'):
+                    self.btn_open_host.config(state=tk.NORMAL)
 
                 self.ip_entry.delete(0, tk.END)
                 self.ip_entry.insert(0, "127.0.0.1")
