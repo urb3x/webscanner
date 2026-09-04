@@ -1703,7 +1703,7 @@ class LocalWebScannerApp:
         self.btn_stop = ttk.Button(row2, text="⏹ Stop", state=tk.DISABLED, command=self.stop_scan)
         self.btn_stop.pack(side=tk.RIGHT, padx=(4, 0))
 
-        self.btn_top_stress = ttk.Button(row2, text="⚡ DoS Stress Test Target", command=self.open_stress_test)
+        self.btn_top_stress = ttk.Button(row2, text="⚡ Stress Test Target", command=self.open_stress_test)
         self.btn_top_stress.pack(side=tk.RIGHT, padx=(4, 6))
 
         # 2. Separated Test Website Hosting Section

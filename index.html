@@ -423,6 +423,21 @@
             </ul>
         </div>
 
+        <!-- Security & False Positive Notice Card -->
+        <div class="card" style="border-left: 4px solid #10b981; background: rgba(16, 185, 129, 0.06);">
+            <h3 style="color: #34d399;" data-i18n="safety_title">🛡️ 100% Safe & Clean (Antivirus / SmartScreen Notice)</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 12px;" data-i18n="safety_desc">
+                WebScanner is 100% open-source software and contains zero malware. Standalone Windows binaries created with Python/PyInstaller often trigger false positive warnings (such as Windows SmartScreen "Unknown Publisher" or heuristic Defender alerts) purely because they do not have a paid enterprise certificate.
+            </p>
+            <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px 18px; font-size: 0.9rem; line-height: 1.6;">
+                <p><strong style="color: #38bdf8;" data-i18n="safety_opt1_title">💡 If Windows SmartScreen blocks the .EXE:</strong></p>
+                <p data-i18n="safety_opt1_body">Click <em>"More info"</em> (or <em>"Więcej informacji"</em>) &rarr; then click <em>"Run anyway"</em> (<em>"Uruchom mimo to"</em>).</p>
+                <div style="height: 10px;"></div>
+                <p><strong style="color: #34d399;" data-i18n="safety_opt2_title">🐍 Direct Python execution (Zero warnings):</strong></p>
+                <p data-i18n="safety_opt2_body">If you prefer not running executables, simply run the Python script directly: <code style="color: #38bdf8;">python local_web_scanner.py</code></p>
+            </div>
+        </div>
+
         <!-- Git / CLI Card -->
         <div class="card">
             <h3 data-i18n="cli_title">💻 Clone via Terminal (Git)</h3>
@@ -463,6 +478,12 @@
                 dl_py: "Download .py",
                 dl_exe: "Download .exe",
                 view_license: "View License",
+                safety_title: "🛡️ 100% Safe & Clean (Antivirus / SmartScreen Notice)",
+                safety_desc: "WebScanner is 100% open-source software and contains zero malware. Standalone Windows binaries created with Python/PyInstaller often trigger false positive warnings (such as Windows SmartScreen 'Unknown Publisher' or heuristic Defender alerts) purely because they do not have a paid enterprise certificate.",
+                safety_opt1_title: "💡 If Windows SmartScreen blocks the .EXE:",
+                safety_opt1_body: "Click 'More info' (or 'Więcej informacji') → then click 'Run anyway' ('Uruchom mimo to').",
+                safety_opt2_title: "🐍 Direct Python execution (Zero warnings):",
+                safety_opt2_body: "If you prefer not running executables, simply run the Python script directly: python local_web_scanner.py",
                 cli_title: "💻 Clone via Terminal (Git)",
                 cli_desc: "You can also clone the entire repository directly using Git:",
                 copy: "Copy",
@@ -488,6 +509,12 @@
                 dl_py: "Pobierz .py",
                 dl_exe: "Pobierz .exe",
                 view_license: "Zobacz licencję",
+                safety_title: "🛡️ 100% Bezpieczny i Czysty (Komunikat o fałszywym alarmie antywirusa)",
+                safety_desc: "WebScanner to w 100% otwarty kod źródłowy (open-source) i nie zawiera żadnego złośliwego oprogramowania. Samodzielne pliki .EXE skompilowane z Pythona (PyInstaller) często wywołują fałszywy alarm Windows Defender / SmartScreen ('Nieznany wydawca' / heurystyka), wyłącznie dlatego, że nie posiadają płatnego certyfikatu korporacyjnego.",
+                safety_opt1_title: "💡 Jeśli filtr Windows SmartScreen zablokuje plik .EXE:",
+                safety_opt1_body: "Kliknij 'Więcej informacji' (More info) → a następnie wybierz 'Uruchom mimo to' (Run anyway).",
+                safety_opt2_title: "🐍 Uruchomienie bezpośrednio przez Python (0 ostrzeżeń):",
+                safety_opt2_body: "Jeśli wolisz nie uruchamiać pliku .exe, uruchom skrypt bezpośrednio w Pythonie: python local_web_scanner.py",
                 cli_title: "💻 Pobieranie przez terminal (Git)",
                 cli_desc: "Możesz również sklonować całe repozytorium bezpośrednio przez Git:",
                 copy: "Kopiuj",
