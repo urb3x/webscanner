@@ -1649,13 +1649,13 @@ class LocalWebScannerApp:
         row2.pack(fill=tk.X, pady=(4, 0))
 
         ttk.Label(row2, text="Threads:").pack(side=tk.LEFT)
-        self.threads_spin = ttk.Spinbox(row2, from_=10, to=250, width=5)
-        self.threads_spin.set(80)
+        self.threads_spin = ttk.Spinbox(row2, from_=10, to=1000, increment=50, width=6)
+        self.threads_spin.set(200)
         self.threads_spin.pack(side=tk.LEFT, padx=(4, 15))
 
         ttk.Label(row2, text="Timeout (s):").pack(side=tk.LEFT)
-        self.timeout_spin = ttk.Spinbox(row2, from_=0.2, to=5.0, increment=0.2, width=5)
-        self.timeout_spin.set(1.0)
+        self.timeout_spin = ttk.Spinbox(row2, from_=0.1, to=5.0, increment=0.1, width=5)
+        self.timeout_spin.set(0.5)
         self.timeout_spin.pack(side=tk.LEFT, padx=(4, 15))
 
         ttk.Label(row2, text="Host RAM:").pack(side=tk.LEFT)
@@ -2079,20 +2079,20 @@ class LocalWebScannerApp:
 
         ports = parse_ports(port_raw)
         if not ports:
-            messagebox.showerror("Input Error", "Please enter valid port numbers.\nExample: 80, 443, 8080")
+            messagebox.showerror("Input Error", "Please enter valid port numbers.\nExample: 1-65535 or 80, 443, 8080")
             return
 
         try:
             num_threads = int(self.threads_spin.get())
-            num_threads = max(1, min(300, num_threads))
+            num_threads = max(1, min(1000, num_threads))
         except ValueError:
-            num_threads = 80
+            num_threads = 200
 
         try:
             timeout_val = float(self.timeout_spin.get())
-            timeout_val = max(0.1, min(10.0, timeout_val))
+            timeout_val = max(0.05, min(5.0, timeout_val))
         except ValueError:
-            timeout_val = 1.0
+            timeout_val = 0.5
 
         all_targets = [(ip, port) for ip in ips for port in ports]
         self.total_targets = len(all_targets)
@@ -2106,7 +2106,10 @@ class LocalWebScannerApp:
         self.progress['maximum'] = self.total_targets
         self.progress['value'] = 0
 
-        self.status_label.config(text=f"Scanning {self.total_targets} targets across {len(ips)} IPs and {len(ports)} ports...")
+        self.status_label.config(text=f"Scanning {self.total_targets} targets across {len(ips)} IPs and {len(ports)} ports ({num_threads} threads)...")
+
+        # Start periodic GUI progress tick
+        self.root.after(100, self._tick_progress)
 
         threading.Thread(
             target=self._scan_worker,
@@ -2120,33 +2123,76 @@ class LocalWebScannerApp:
             self.status_label.config(text="Stopping scan... Please wait.")
             self.btn_stop.config(state=tk.DISABLED)
 
+    def _tick_progress(self):
+        if not self.is_scanning:
+            return
+
+        completed = self.completed_targets
+        self.progress['value'] = completed
+        elapsed = time.time() - self.start_time
+        rate = completed / elapsed if elapsed > 0 else 0
+        pct = int((completed / self.total_targets) * 100) if self.total_targets > 0 else 0
+
+        self.status_label.config(
+            text=f"Progress: {completed}/{self.total_targets} ({pct}%) | {rate:.1f} checks/sec | Elapsed: {int(elapsed)}s"
+        )
+
+        if self.is_scanning:
+            self.root.after(100, self._tick_progress)
+
     def _scan_worker(self, targets, max_workers, timeout):
-        def probe_wrapper(target):
-            if self.stop_requested:
-                return None
-            ip, port = target
-            res = probe_web_service(ip, port, timeout=timeout)
-            return res
+        work_queue = queue.Queue(maxsize=10000)
+        lock = threading.Lock()
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-            future_to_target = {executor.submit(probe_wrapper, t): t for t in targets}
+        def worker():
+            while not self.stop_requested:
+                try:
+                    item = work_queue.get(timeout=0.2)
+                except queue.Empty:
+                    if producer_finished[0]:
+                        break
+                    continue
 
-            for future in concurrent.futures.as_completed(future_to_target):
-                if self.stop_requested:
-                    for f in future_to_target:
-                        f.cancel()
+                if item is None:
+                    work_queue.task_done()
                     break
 
+                ip, port = item
                 try:
-                    res = future.result()
-                    if res:
+                    res = probe_web_service(ip, port, timeout=timeout)
+                    if res and not self.stop_requested:
                         self.root.after(0, self._add_result, res)
                 except Exception:
                     pass
+                finally:
+                    with lock:
+                        self.completed_targets += 1
+                    work_queue.task_done()
 
-                self.completed_targets += 1
-                if self.completed_targets % 5 == 0 or self.completed_targets == self.total_targets:
-                    self.root.after(0, self._update_progress, self.completed_targets)
+        producer_finished = [False]
+        threads = []
+        actual_workers = min(max_workers, len(targets)) if len(targets) > 0 else 1
+        for _ in range(actual_workers):
+            t = threading.Thread(target=worker, daemon=True)
+            t.start()
+            threads.append(t)
+
+        for target in targets:
+            if self.stop_requested:
+                break
+            work_queue.put(target)
+
+        producer_finished[0] = True
+        work_queue.join()
+
+        for _ in threads:
+            try:
+                work_queue.put(None, block=False)
+            except Exception:
+                pass
+
+        for t in threads:
+            t.join(timeout=0.5)
 
         self.root.after(0, self._scan_finished)
 
