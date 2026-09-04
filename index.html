@@ -1,10 +1,10 @@
 ﻿<!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pobierz WebScanner - Local IP Scanner & Test Site Utility</title>
-    <meta name="description" content="Pobierz skrypt Python oraz gotowy program WebScanner do skanowania sieci i testów obciążeniowych.">
+    <title>Download WebScanner - Local IP Scanner & Test Site Utility</title>
+    <meta name="description" content="Download WebScanner Python scripts and standalone Windows executable for local network scanning and DoS benchmarking.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,7 +16,6 @@
             --primary: #0284c7;
             --primary-hover: #0369a1;
             --accent: #10b981;
-            --accent-purple: #8b5cf6;
             --text: #f8fafc;
             --text-muted: #94a3b8;
         }
@@ -39,16 +38,63 @@
             background-image: radial-gradient(circle at 50% 0%, rgba(2, 132, 199, 0.15) 0%, transparent 60%);
         }
 
+        /* Top Bar & Language Switcher */
+        .top-nav {
+            display: flex;
+            justify-content: flex-end;
+            padding: 16px 24px 0;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .lang-switch {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(19, 27, 46, 0.9);
+            border: 1px solid var(--card-border);
+            border-radius: 999px;
+            padding: 4px;
+            gap: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+        }
+
+        .lang-btn:hover:not(.active) {
+            color: #f8fafc;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
         .container {
             max-width: 860px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 20px 20px 40px;
             width: 100%;
         }
 
         header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
         }
 
         .badge {
@@ -73,7 +119,7 @@
         p.lead {
             color: var(--text-muted);
             font-size: 1.15rem;
-            max-width: 600px;
+            max-width: 620px;
             margin: 0 auto;
         }
 
@@ -84,7 +130,7 @@
             border-radius: 16px;
             padding: 32px;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
         }
 
@@ -120,7 +166,6 @@
 
         .btn-zip {
             background: #10b981;
-            color: #064e3b;
             color: #fff;
         }
         .btn-zip:hover {
@@ -214,6 +259,7 @@
             font-weight: 600;
             text-decoration: none;
             transition: all 0.2s;
+            white-space: nowrap;
         }
 
         .file-dl-btn:hover {
@@ -240,14 +286,16 @@
             background: rgba(255, 255, 255, 0.1);
             border: none;
             color: #fff;
-            padding: 5px 10px;
+            padding: 5px 12px;
             border-radius: 5px;
-            font-size: 0.75rem;
+            font-size: 0.78rem;
+            font-weight: 600;
             cursor: pointer;
+            transition: background 0.2s;
         }
 
         .copy-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.25);
         }
 
         footer {
@@ -266,106 +314,201 @@
 </head>
 <body>
 
+    <!-- Top Navigation with Language Switcher -->
+    <div class="top-nav">
+        <div class="lang-switch">
+            <button id="btn-en" class="lang-btn active" onclick="setLanguage('en')">
+                🇬🇧 EN
+            </button>
+            <button id="btn-pl" class="lang-btn" onclick="setLanguage('pl')">
+                🇵🇱 PL
+            </button>
+        </div>
+    </div>
+
     <div class="container">
         <header>
-            <div class="badge">🚀 Wersja 2.0 • Python 3</div>
-            <h1>Pobierz WebScanner</h1>
-            <p class="lead">Skaner sieci lokalnej, wbudowany serwer testowy z regulacją RAM oraz moduł testów obciążeniowych DoS.</p>
+            <div class="badge" data-i18n="badge">🚀 Version 2.0 • Python 3</div>
+            <h1 data-i18n="title">Download WebScanner</h1>
+            <p class="lead" data-i18n="lead">Local network IP scanner, embedded test site with dynamic RAM allocation, and DoS stress benchmarking utility.</p>
         </header>
 
-        <!-- Główny panel pobierania -->
+        <!-- Main Download Card -->
         <div class="download-main">
-            <h2>📦 Pobierz całą paczkę (ZIP)</h2>
-            <p>Zawiera kompletny kod źródłowy, pliki serwera, dokumentację oraz gotowy plik wykonywalny EXE.</p>
+            <h2 data-i18n="zip_title">📦 Download Complete Package (.ZIP)</h2>
+            <p data-i18n="zip_desc">Includes full Python source code, test server, documentation, and standalone Windows executable.</p>
             <div class="btn-group">
                 <a href="https://github.com/urb3x/webscanner/archive/refs/heads/main.zip" class="btn btn-zip">
-                    📥 Pobierz Całe Repozytorium (.ZIP)
+                    <span data-i18n="btn_zip">📥 Download Entire Repository (.ZIP)</span>
                 </a>
                 <a href="https://raw.githubusercontent.com/urb3x/webscanner/main/local_web_scanner.py" download="local_web_scanner.py" class="btn btn-py">
-                    🐍 Pobierz Główny Skrypt (.PY)
+                    <span data-i18n="btn_py">🐍 Download Main Script (.PY)</span>
                 </a>
                 <a href="https://github.com/urb3x/webscanner/raw/main/LocalWebScanner.exe" class="btn btn-exe">
-                    🖥️ Pobierz Program (.EXE)
+                    <span data-i18n="btn_exe">🖥️ Download Executable (.EXE)</span>
                 </a>
             </div>
         </div>
 
-        <!-- Lista pojedynczych plików do pobrania -->
+        <!-- Individual Files Card -->
         <div class="card">
-            <h3>📁 Poszczególne pliki skryptu</h3>
+            <h3 data-i18n="files_title">📁 Individual Script Files</h3>
             <ul class="file-list">
                 <li class="file-item">
                     <div class="file-info">
                         <span class="file-icon">🐍</span>
                         <div>
                             <div class="file-name">local_web_scanner.py</div>
-                            <div class="file-desc">Główny skrypt aplikacji GUI z panelem skanera, serwera i testów DoS</div>
+                            <div class="file-desc" data-i18n="desc_scanner">Main GUI application script with scanner, test site, and DoS benchmarking engine</div>
                         </div>
                     </div>
-                    <a href="https://raw.githubusercontent.com/urb3x/webscanner/main/local_web_scanner.py" target="_blank" download class="file-dl-btn">Pobierz .py</a>
+                    <a href="https://raw.githubusercontent.com/urb3x/webscanner/main/local_web_scanner.py" target="_blank" download class="file-dl-btn" data-i18n="dl_py">Download .py</a>
                 </li>
                 <li class="file-item">
                     <div class="file-info">
                         <span class="file-icon">🌐</span>
                         <div>
                             <div class="file-name">mock_camera_server.py</div>
-                            <div class="file-desc">Samodzielny serwer testowy z dynamiczną alokacją RAM i detektorem ataków</div>
+                            <div class="file-desc" data-i18n="desc_mock">Standalone mock test server with dynamic RAM allocation and attack detector</div>
                         </div>
                     </div>
-                    <a href="https://raw.githubusercontent.com/urb3x/webscanner/main/mock_camera_server.py" target="_blank" download class="file-dl-btn">Pobierz .py</a>
+                    <a href="https://raw.githubusercontent.com/urb3x/webscanner/main/mock_camera_server.py" target="_blank" download class="file-dl-btn" data-i18n="dl_py">Download .py</a>
                 </li>
                 <li class="file-item">
                     <div class="file-info">
                         <span class="file-icon">⚙️</span>
                         <div>
                             <div class="file-name">LocalWebScanner.exe</div>
-                            <div class="file-desc">Skompilowany program dla Windows (działa bez instalacji Pythona)</div>
+                            <div class="file-desc" data-i18n="desc_exe">Compiled standalone Windows binary (runs without Python installed)</div>
                         </div>
                     </div>
-                    <a href="https://github.com/urb3x/webscanner/raw/main/LocalWebScanner.exe" class="file-dl-btn">Pobierz .exe</a>
+                    <a href="https://github.com/urb3x/webscanner/raw/main/LocalWebScanner.exe" class="file-dl-btn" data-i18n="dl_exe">Download .exe</a>
                 </li>
                 <li class="file-item">
                     <div class="file-info">
                         <span class="file-icon">⚖️</span>
                         <div>
                             <div class="file-name">LICENSE</div>
-                            <div class="file-desc">Licencja do użytku osobistego (Personal Use Only License)</div>
+                            <div class="file-desc" data-i18n="desc_license">Personal Use Only License</div>
                         </div>
                     </div>
-                    <a href="https://raw.githubusercontent.com/urb3x/webscanner/main/LICENSE" target="_blank" class="file-dl-btn">Zobacz licencję</a>
+                    <a href="https://raw.githubusercontent.com/urb3x/webscanner/main/LICENSE" target="_blank" class="file-dl-btn" data-i18n="view_license">View License</a>
                 </li>
             </ul>
         </div>
 
-        <!-- Klonowanie przez Git / Terminal -->
+        <!-- Git / CLI Card -->
         <div class="card">
-            <h3>💻 Pobieranie przez terminal (Git)</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 8px;">Możesz również sklonować cały skrypt bezpośrednio z GitHub:</p>
+            <h3 data-i18n="cli_title">💻 Clone via Terminal (Git)</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 8px;" data-i18n="cli_desc">You can also clone the entire repository directly using Git:</p>
             <div class="cli-box">
-                <span id="git-cmd">git clone https://github.com/urb3x/webscanner.git</span>
-                <button class="copy-btn" onclick="copyGit()">Kopiuj</button>
+                <span>git clone https://github.com/urb3x/webscanner.git</span>
+                <button class="copy-btn" onclick="copyText('git clone https://github.com/urb3x/webscanner.git')" data-i18n="copy">Copy</button>
             </div>
             <div class="cli-box" style="margin-top: 10px;">
-                <span id="run-cmd">python local_web_scanner.py</span>
-                <button class="copy-btn" onclick="copyRun()">Kopiuj</button>
+                <span>python local_web_scanner.py</span>
+                <button class="copy-btn" onclick="copyText('python local_web_scanner.py')" data-i18n="copy">Copy</button>
             </div>
         </div>
     </div>
 
     <footer>
         <div class="container">
-            <p>&copy; 2026 Pepper. Repozytorium: <a href="https://github.com/urb3x/webscanner" target="_blank">github.com/urb3x/webscanner</a> • Licencja do użytku osobistego.</p>
+            <p>&copy; 2026 Pepper. <span data-i18n="footer_repo">Repository:</span> <a href="https://github.com/urb3x/webscanner" target="_blank">github.com/urb3x/webscanner</a> • <span data-i18n="footer_license">Personal Use Only License.</span></p>
         </div>
     </footer>
 
     <script>
-        function copyGit() {
-            navigator.clipboard.writeText("git clone https://github.com/urb3x/webscanner.git");
-            alert("Skopiowano polecenie git clone do schowka!");
+        const translations = {
+            en: {
+                badge: "🚀 Version 2.0 • Python 3",
+                title: "Download WebScanner",
+                lead: "Local network IP scanner, embedded test site with dynamic RAM allocation, and DoS stress benchmarking utility.",
+                zip_title: "📦 Download Complete Package (.ZIP)",
+                zip_desc: "Includes full Python source code, test server, documentation, and standalone Windows executable.",
+                btn_zip: "📥 Download Entire Repository (.ZIP)",
+                btn_py: "🐍 Download Main Script (.PY)",
+                btn_exe: "🖥️ Download Executable (.EXE)",
+                files_title: "📁 Individual Script Files",
+                desc_scanner: "Main GUI application script with scanner, test site, and DoS benchmarking engine",
+                desc_mock: "Standalone mock test server with dynamic RAM allocation and attack detector",
+                desc_exe: "Compiled standalone Windows binary (runs without Python installed)",
+                desc_license: "Personal Use Only License",
+                dl_py: "Download .py",
+                dl_exe: "Download .exe",
+                view_license: "View License",
+                cli_title: "💻 Clone via Terminal (Git)",
+                cli_desc: "You can also clone the entire repository directly using Git:",
+                copy: "Copy",
+                copied_alert: "Copied to clipboard!",
+                footer_repo: "Repository:",
+                footer_license: "Personal Use Only License."
+            },
+            pl: {
+                badge: "🚀 Wersja 2.0 • Python 3",
+                title: "Pobierz WebScanner",
+                lead: "Skaner sieci lokalnej, wbudowany serwer testowy z dynamiczną regulacją RAM oraz moduł testów obciążeniowych DoS.",
+                zip_title: "📦 Pobierz całą paczkę (.ZIP)",
+                zip_desc: "Zawiera kompletny kod źródłowy, pliki serwera, dokumentację oraz gotowy plik wykonywalny EXE dla Windows.",
+                btn_zip: "📥 Pobierz Całe Repozytorium (.ZIP)",
+                btn_py: "🐍 Pobierz Główny Skrypt (.PY)",
+                btn_exe: "🖥️ Pobierz Program (.EXE)",
+                files_title: "📁 Poszczególne pliki skryptu",
+                desc_scanner: "Główny skrypt aplikacji GUI z panelem skanera, serwera testowego i testów DoS",
+                desc_mock: "Samodzielny serwer testowy z dynamiczną alokacją RAM i detektorem ataków",
+                desc_exe: "Skompilowany program dla Windows (działa bez instalacji Pythona)",
+                desc_license: "Licencja do użytku osobistego (Personal Use Only)",
+                dl_py: "Pobierz .py",
+                dl_exe: "Pobierz .exe",
+                view_license: "Zobacz licencję",
+                cli_title: "💻 Pobieranie przez terminal (Git)",
+                cli_desc: "Możesz również sklonować całe repozytorium bezpośrednio przez Git:",
+                copy: "Kopiuj",
+                copied_alert: "Skopiowano do schowka!",
+                footer_repo: "Repozytorium:",
+                footer_license: "Licencja do użytku osobistego."
+            }
+        };
+
+        let currentLang = 'en';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+
+            // Toggle active buttons
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            document.getElementById('btn-pl').classList.toggle('active', lang === 'pl');
+
+            // Update text elements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+
+            try {
+                localStorage.setItem('webscanner_lang', lang);
+            } catch (e) {}
         }
-        function copyRun() {
-            navigator.clipboard.writeText("python local_web_scanner.py");
-            alert("Skopiowano polecenie uruchomienia do schowka!");
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+            const msg = translations[currentLang].copied_alert || "Copied to clipboard!";
+            alert(msg);
+        }
+
+        // Initialize language from localStorage or default to EN
+        try {
+            const savedLang = localStorage.getItem('webscanner_lang');
+            if (savedLang === 'pl' || savedLang === 'en') {
+                setLanguage(savedLang);
+            } else {
+                setLanguage('en');
+            }
+        } catch (e) {
+            setLanguage('en');
         }
     </script>
 </body>
