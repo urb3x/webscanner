@@ -33,6 +33,9 @@ except ImportError:
 # Default ports (ALL ports 1 to 65535)
 DEFAULT_PORTS = "1-65535"
 
+# Most common web and service ports
+COMMON_PORTS = "80, 443, 8080, 8443, 3000, 5000, 8000, 8888, 9000, 8081, 8008, 9443, 7001, 5001, 8088, 8880, 2082, 2083, 2086, 2087, 8181, 8001, 8082, 9090, 10000"
+
 # Common ports that default to HTTPS
 HTTPS_PORTS = {443, 8443, 9443}
 
@@ -1641,7 +1644,10 @@ class LocalWebScannerApp:
         self.port_entry.insert(0, DEFAULT_PORTS)
         self.port_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 6))
 
-        btn_all_web = ttk.Button(row1, text="🌐 ALL Web Ports (1-65535)", command=lambda: self._set_ports("1-65535"))
+        btn_common_ports = ttk.Button(row1, text="⭐ Common Ports", command=lambda: self._set_ports(COMMON_PORTS))
+        btn_common_ports.pack(side=tk.LEFT, padx=(0, 4))
+
+        btn_all_web = ttk.Button(row1, text="🌐 ALL Ports (1-65535)", command=lambda: self._set_ports("1-65535"))
         btn_all_web.pack(side=tk.LEFT)
 
         # Row 2: Concurrency, Timeout, and Action Buttons
